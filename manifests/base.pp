@@ -6,4 +6,5 @@ class profile::base ($basepackages = any2array(hiera_array("basepackages")),
   package { $unwantedpackages: ensure => absent }
 
   include etckeeper
+  include network
 }
