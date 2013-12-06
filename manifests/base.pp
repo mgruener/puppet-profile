@@ -8,6 +8,24 @@ class profile::base ($packages = hiera_hash('packages',undef),
   include network
   include usermanagement
 
+  if $packages != undef {
+    create_resources('package',$packages)
+  }
+  if $sysctlvalues != undef {
+    create_resources('sysctl',$sysctlvalues)
+  }
+  if $grubkernelparams != undef {
+    create_resources('kernel_parameter',$grubkernelparams)
+  }
+  if $sshd_config != undef {
+    create_resources('sshd_config',$sshd_config)
+  }
+  if $sshd_subsystems != undef {
+    create_resources('sshd_config_subsystem',$sshd_subsystems)
+  }
+
+  # "brute-force" changes for which I have yet
+  # to find a more flexible/scalable solution
   file_line { "root unalias cp":
     ensure => absent,
     line => "alias cp='cp -i'",
@@ -24,21 +42,5 @@ class profile::base ($packages = hiera_hash('packages',undef),
     ensure => absent,
     line => "alias rm='rm -i'",
     path => "/root/.bashrc"
-  }
-
-  if $packages != undef {
-    create_resources('package',$packages)
-  }
-  if $sysctlvalues != undef {
-    create_resources('sysctl',$sysctlvalues)
-  }
-  if $grubkernelparams != undef {
-    create_resources('kernel_parameter',$grubkernelparams)
-  }
-  if $sshd_config != undef {
-    create_resources('sshd_config',$sshd_config)
-  }
-  if $sshd_subsystems != undef {
-    create_resources('sshd_config_subsystem',$sshd_subsystems)
   }
 }
