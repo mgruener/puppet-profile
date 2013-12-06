@@ -1,12 +1,8 @@
-class profile::base ($basepackages = any2array(hiera_array('basepackages')),
-                     $unwantedpackages = any2array(hiera_array('unwantedpackages')),
+class profile::base ($packages = hiera_hash('packages',undef),
                      $sysctlvalues = hiera_hash('sysctlvalues',undef),
                      $grubkernelparams = hiera_hash('grubkernelparameter',undef),
                      $sshd_config = hiera_hash('sshd_config',undef),
                      $sshd_subsystems = hiera_hash('sshd_subsystems',undef)) {
-
-  package { $basepackages: ensure => present }
-  package { $unwantedpackages: ensure => absent }
 
   include etckeeper
   include network
@@ -30,6 +26,9 @@ class profile::base ($basepackages = any2array(hiera_array('basepackages')),
     path => "/root/.bashrc"
   }
 
+  if $packages != undef {
+    create_resources('package',$packages)
+  }
   if $sysctlvalues != undef {
     create_resources('sysctl',$sysctlvalues)
   }
