@@ -43,4 +43,15 @@ class profile::base ($packages = hiera_hash('packages',undef),
     line => "alias rm='rm -i'",
     path => "/root/.bashrc"
   }
+
+  augeas { "grub config":
+    context => "/files/etc/grub.conf",
+    incl => "/etc/grub.conf",
+    lens => "Grub.lns",
+    changes => [
+      "rm hiddenmenu",
+      "rm splashimage",
+      "set timeout 10",
+    ]
+  }
 }
