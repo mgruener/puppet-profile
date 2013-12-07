@@ -1,8 +1,8 @@
-class profile::base ($packages = hiera_hash('packages',undef),
-                     $sysctlvalues = hiera_hash('sysctlvalues',undef),
-                     $grubkernelparams = hiera_hash('grubkernelparameter',undef),
-                     $sshd_config = hiera_hash('sshd_config',undef),
-                     $sshd_subsystems = hiera_hash('sshd_subsystems',undef)) {
+class profile::base ($packages = hiera_hash("${module_name}::base::packages",undef),
+                     $sysctlvalues = hiera_hash("${module_name}::base::sysctlvalues",undef),
+                     $grubkernelparams = hiera_hash("${module_name}::base::grubkernelparameter",undef),
+                     $sshd_config = hiera_hash("${module_name}::base::sshd_config",undef),
+                     $sshd_subsystems = hiera_hash("${module_name}::base::sshd_subsystems",undef)) {
 
   include etckeeper
   include network
