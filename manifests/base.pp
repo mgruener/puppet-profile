@@ -7,6 +7,7 @@ class profile::base ($packages = hiera_hash("${module_name}::base::packages",und
   include etckeeper
   include network
   include usermanagement
+  include puppet
 
   if $packages != undef {
     create_resources('package',$packages)
