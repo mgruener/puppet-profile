@@ -2,7 +2,7 @@ class profile::virthost ($guests = hiera_hash("${module_name}::virthost::guests"
 
   include virtualization
 
-  if $packages != undef {
+  if $guests != undef {
     create_resources('guest',$guests)
   }
 }
