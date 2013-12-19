@@ -8,7 +8,7 @@ class profile::mysqlserver {
     package_ensure          => hiera("${module_name}::mysqlserver::server_package_ensure",$mysql::params::server_package_ensure),
     package_name            => hiera("${module_name}::mysqlserver::server_package_name",$mysql::params::server_package_name),
     purge_conf_dir          => hiera("${module_name}::mysqlserver::purge_conf_dir",$mysql::params::purge_conf_dir),
-    remove_default_accounts => hiera("${module_name}::mysqlserver",false),
+    remove_default_accounts => hiera("${module_name}::mysqlserver::remove_default_accounts",false),
     restart                 => hiera("${module_name}::mysqlserver::restart",$mysql::params::restart),
     root_group              => hiera("${module_name}::mysqlserver::root_group",$mysql::params::root_group),
     root_password           => hiera("${module_name}::mysqlserver::root_password",$mysql::params::root_password),
