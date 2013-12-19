@@ -1,9 +1,9 @@
-class profile::base ($packages = hiera_hash("${module_name}::base::packages",undef),
-                     $sysctlvalues = hiera_hash("${module_name}::base::sysctlvalues",undef),
-                     $grubkernelparams = hiera_hash("${module_name}::base::grubkernelparameter",undef),
-                     $grubtimeout = hiera("${module_name}::base::grubtimeout",10),
-                     $sshd_config = hiera_hash("${module_name}::base::sshd_config",undef),
-                     $sshd_subsystems = hiera_hash("${module_name}::base::sshd_subsystems",undef)) {
+class profile::base ( $packages = hiera_hash("${module_name}::base::packages",undef),
+                      $sysctlvalues = hiera_hash("${module_name}::base::sysctlvalues",undef),
+                      $grubkernelparams = hiera_hash("${module_name}::base::grubkernelparameter",undef),
+                      $grubtimeout = hiera("${module_name}::base::grubtimeout",10),
+                      $sshd_config = hiera_hash("${module_name}::base::sshd_config",undef),
+                      $sshd_subsystems = hiera_hash("${module_name}::base::sshd_subsystems",undef)) {
 
   include etckeeper
   include network
@@ -28,54 +28,55 @@ class profile::base ($packages = hiera_hash("${module_name}::base::packages",und
 
   # "brute-force" changes for which I have yet
   # to find a more flexible/scalable solution
-  file_line { "root unalias cp":
+  file_line { 'root unalias cp':
     ensure => absent,
-    line => "alias cp='cp -i'",
-    path => "/root/.bashrc"
+    line   => 'alias cp="cp -i"',
+    path   => '/root/.bashrc'
   }
 
-  file_line { "root unalias mv":
+  file_line { 'root unalias mv':
     ensure => absent,
-    line => "alias mv='mv -i'",
-    path => "/root/.bashrc"
+    line   => 'alias mv="mv -i"',
+    path   => '/root/.bashrc'
   }
 
-  file_line { "root unalias rm":
+  file_line { 'root unalias rm':
     ensure => absent,
-    line => "alias rm='rm -i'",
-    path => "/root/.bashrc"
+    line   => 'alias rm="rm -i"',
+    path   => '/root/.bashrc'
   }
 
   case $::operatingsystem {
     'RedHat', 'CentOS': {
-      augeas { "grub config":
-        context => "/files/etc/grub.conf",
-        incl => "/etc/grub.conf",
-        lens => "Grub.lns",
+      augeas { 'grub config':
+        context => '/files/etc/grub.conf',
+        incl    => '/etc/grub.conf',
+        lens    => 'Grub.lns',
         changes => [
-          "rm hiddenmenu",
-          "rm splashimage",
+          'rm hiddenmenu',
+          'rm splashimage',
           "set timeout ${grubtimeout}",
         ]
       }
     }
     'Fedora': {
-      augeas { "grub config":
-        context => "/files/etc/sysconfig/grub",
-        incl => "/etc/sysconfig/grub",
-        lens => "Shellvars.lns",
+      augeas { 'grub config':
+        context => '/files/etc/sysconfig/grub',
+        incl    => '/etc/sysconfig/grub',
+        lens    => 'Shellvars.lns',
         changes => [
-          "rm GRUB_BACKGROUND",
+          'rm GRUB_BACKGROUND',
           "set GRUB_TIMEOUT ${grubtimeout}"
         ],
-        notify => Exec["update-grub"]
+        notify  => Exec['update-grub']
       }
 
-      exec { "update-grub":
-        path => "/sbin:/usr/sbin:/bin:/usr/bin",
-        command => "grub2-mkconfig -o /boot/grub2/grub.cfg",
+      exec { 'update-grub':
+        path        => '/sbin:/usr/sbin:/bin:/usr/bin',
+        command     => 'grub2-mkconfig -o /boot/grub2/grub.cfg',
         refreshonly => true
       }
     }
+    default: {}
   }
 }
