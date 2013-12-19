@@ -1,6 +1,7 @@
 class profile::base ($packages = hiera_hash("${module_name}::base::packages",undef),
                      $sysctlvalues = hiera_hash("${module_name}::base::sysctlvalues",undef),
                      $grubkernelparams = hiera_hash("${module_name}::base::grubkernelparameter",undef),
+                     $grubtimeout = hiera("${module_name}::base::grubtimeout",10),
                      $sshd_config = hiera_hash("${module_name}::base::sshd_config",undef),
                      $sshd_subsystems = hiera_hash("${module_name}::base::sshd_subsystems",undef)) {
 
@@ -45,14 +46,36 @@ class profile::base ($packages = hiera_hash("${module_name}::base::packages",und
     path => "/root/.bashrc"
   }
 
-  augeas { "grub config":
-    context => "/files/etc/grub.conf",
-    incl => "/etc/grub.conf",
-    lens => "Grub.lns",
-    changes => [
-      "rm hiddenmenu",
-      "rm splashimage",
-      "set timeout 10",
-    ]
+  case $::operatingsystem {
+    'RedHat', 'CentOS': {
+      augeas { "grub config":
+        context => "/files/etc/grub.conf",
+        incl => "/etc/grub.conf",
+        lens => "Grub.lns",
+        changes => [
+          "rm hiddenmenu",
+          "rm splashimage",
+          "set timeout ${grubtimeout}",
+        ]
+      }
+    }
+    'Fedora': {
+      augeas { "grub config":
+        context => "/files/etc/sysconfig/grub",
+        incl => "/etc/sysconfig/grub",
+        lens => "Shellvars.lns",
+        changes => [
+          "rm GRUB_BACKGROUND",
+          "set GRUB_TIMEOUT ${grubtimeout}"
+        ],
+        notify => Exec["update-grub"]
+      }
+
+      exec { "update-grub":
+        path => "/sbin:/usr/sbin:/bin:/usr/bin",
+        command => "grub2-mkconfig -o /boot/grub2/grub.cfg",
+        refreshonly => true
+      }
+    }
   }
 }
