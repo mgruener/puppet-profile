@@ -1,12 +1,8 @@
 class profile::zarafa_allinone (
   $serverhostname = hiera('zarafa::server::hostname',$::fqdn),
-  $mysqluser      = hiera('zarafa::server::mysqluser','zarafa'),
-  $mysqlpassword  = hiera('zarafa::server::mysqlpassword'),
-  $mysqldb        = hiera('zarafa::server::mysqlmysqldb','zarafa'),
-  $mysqlhost      = hiera('zarafa::server::mysqlhost','localhost'),
   $certdata       = hiera_hash("${module_name}::zarafa_allinone::certdata"),
 ) {
-  include profile::mysqlserver
+  include profile::zarafa_dbhost
   include certtool
   include zarafa
   include zarafa::client
@@ -19,11 +15,14 @@ class profile::zarafa_allinone (
   include zarafa::search
   include zarafa::webaccess
 
-  mysql::db { $mysqldb:
-    user     => $mysqluser,
-    password => $mysqlpassword,
-    host     => $mysqlhost
-  }
+  Class['mysql::server::service'] -> Class['zarafa::server']
+  Class['profile::zarafa_dbhost'] -> Class['zarafa::server'] 
+  Class['zarafa::server'] -> Class['zarafa::dagent']
+  Class['zarafa::server'] -> Class['zarafa::spooler']
+  Class['zarafa::server'] -> Class['zarafa::gateway']
+  Class['zarafa::server'] -> Class['zarafa::ical']
+  Class['zarafa::server'] -> Class['zarafa::monitor']
+  Class['zarafa::server'] -> Class['zarafa::search']
 
   Certtool::Cert {
     organization    => $certdata[organization],
