@@ -27,8 +27,8 @@ class profile::zarafa_allinone (
   Certtool::Cert {
     organization    => $certdata[organization],
     unit            => $certdata[unit],
-    locality        => $certdata[localits],
-    state           => $certdata[stat],
+    locality        => $certdata[locality],
+    state           => $certdata[state],
     country         => $certdata[country],
     caname          => $certdata[caname],
     expiration_days => $certdata[expidation_days]
@@ -38,14 +38,39 @@ class profile::zarafa_allinone (
     is_ca => true
   }
 
+  $usage = [ "tls_www_server",
+             "encryption_key",
+             "signing_key",
+             "tls_www_client",
+             "cert_signing_key",
+             "crl_signing_key",
+             "code_signing_key",
+             "ocsp_signing_key",
+             "time_stamping_key",
+             "ipsec_ike_key"
+  ] 
+
   certtool::cert { $serverhostname:
-    usage => "tls_www_server",
+    usage => $usage,
+    unit => "test",
     notify => Exec[join-zarafa-ssl-keyfile]
+  }
+
+  certtool::cert { "${serverhostname}-spooler":
+    usage => $usage
+    unit => "test",
+    notify => Exec[join-spooler-ssl-keyfile]
   }
 
   exec { 'join-zarafa-ssl-keyfile':
     path => "/bin:/usr/bin:/sbin:/usr/sbin",
     command => "cat /etc/pki/tls/private/${serverhostname}.key >> /etc/pki/tls/certs/${serverhostname}.crt",
+    refreshonly => true
+  }
+
+  exec { 'join-spooler-ssl-keyfile':
+    path => "/bin:/usr/bin:/sbin:/usr/sbin",
+    command => "cat /etc/pki/tls/private/${serverhostname}-spooler.key >> /etc/pki/tls/certs/${serverhostname}-spooler.crt",
     refreshonly => true
   }
 }
