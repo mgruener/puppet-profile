@@ -5,23 +5,23 @@ class profile::zarafa_allinone (
   include profile::zarafa_dbhost
   include certtool
   include zarafa
-  include zarafa::client
-  include zarafa::server
-  include zarafa::dagent
-  include zarafa::spooler
-  include zarafa::gateway
-  include zarafa::ical
-  include zarafa::monitor
-  include zarafa::search
-  include zarafa::webaccess
+  include zarafa::component::client
+  include zarafa::component::server
+  include zarafa::component::dagent
+  include zarafa::component::spooler
+  include zarafa::component::gateway
+  include zarafa::component::ical
+  include zarafa::component::monitor
+  include zarafa::component::search
+  include zarafa::component::webaccess
 
-  Class['profile::zarafa_dbhost'] -> Class['zarafa::server'] 
-  Class['zarafa::server'] -> Class['zarafa::dagent']
-  Class['zarafa::server'] -> Class['zarafa::spooler']
-  Class['zarafa::server'] -> Class['zarafa::gateway']
-  Class['zarafa::server'] -> Class['zarafa::ical']
-  Class['zarafa::server'] -> Class['zarafa::monitor']
-  Class['zarafa::server'] -> Class['zarafa::search']
+  Class['profile::zarafa_dbhost'] -> Class['zarafa::component::server'] 
+  Class['zarafa::component::server'] -> Class['zarafa::component::dagent']
+  Class['zarafa::component::server'] -> Class['zarafa::component::spooler']
+  Class['zarafa::component::server'] -> Class['zarafa::component::gateway']
+  Class['zarafa::component::server'] -> Class['zarafa::component::ical']
+  Class['zarafa::component::server'] -> Class['zarafa::component::monitor']
+  Class['zarafa::component::server'] -> Class['zarafa::component::search']
 
   $certdir   = "/etc/zarafa/ssl"
   $keydir    = "/etc/pki/tls/private"
