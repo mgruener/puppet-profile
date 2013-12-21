@@ -15,7 +15,6 @@ class profile::zarafa_allinone (
   include zarafa::search
   include zarafa::webaccess
 
-  Class['mysql::server::service'] -> Class['zarafa::server']
   Class['profile::zarafa_dbhost'] -> Class['zarafa::server'] 
   Class['zarafa::server'] -> Class['zarafa::dagent']
   Class['zarafa::server'] -> Class['zarafa::spooler']
