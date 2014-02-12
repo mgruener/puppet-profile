@@ -1,4 +1,6 @@
-class profile::virthost ($guests = hiera_hash("${module_name}::virthost::guests",undef)) {
+class profile::virthost (
+  $guests = hiera_hash("${module_name}::virthost::guests",undef)
+) {
 
   include virtualization
 
