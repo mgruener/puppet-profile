@@ -1,30 +1,99 @@
 class profile::base (
-  $packages = hiera_hash("${module_name}::base::packages",undef),
-  $sysctlvalues = hiera_hash("${module_name}::base::sysctlvalues",undef),
-  $grubkernelparams = hiera_hash("${module_name}::base::grubkernelparameter",undef),
-  $grubtimeout = hiera("${module_name}::base::grubtimeout",10),
-  $sshd_config = hiera_hash("${module_name}::base::sshd_config",undef),
-  $sshd_subsystems = hiera_hash("${module_name}::base::sshd_subsystems",undef)
+  $packages = undef,
+  $sysctlvalues = undef,
+  $grubkernelparams = undef,
+  $grubtimeout = 10,
+  $sshd_config = undef,
+  $sshd_subsystems = undef,
+  $hiera_merge = false,
 ) {
+
+  $myclass = "${module_name}::base"
 
   include etckeeper
   include network
   include usermanagement
   include puppet
 
+  case type($hiera_merge) {
+    'string': {
+      validate_re($hiera_merge, '^(true|false)$', "${myclass}::hiera_merge may be either 'true' or 'false' and is set to <${hiera_merge}>.")
+      $hiera_merge_real = str2bool($hiera_merge)
+    }
+    'boolean': {
+      $hiera_merge_real = $hiera_merge
+    }
+    default: {
+      fail("${myclass}::hiera_merge type must be true or false.")
+    }
+  }
+
   if $packages != undef {
-    create_resources('package',$packages)
+    if !is_hash($packages) {
+        fail("${myclass}::packages must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $packages_real = hiera_hash("${myclass}::packages")
+    } else {
+      $packages_real = $packages
+    }
+
+    create_resources('package',$packages_real)
   }
+
   if $sysctlvalues != undef {
-    create_resources('sysctl',$sysctlvalues)
+    if !is_hash($sysctlvalues) {
+        fail("${myclass}::sysctlvalues must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $sysctlvalues_real = hiera_hash("${myclass}::sysctlvalues")
+    } else {
+      $sysctlvalues_real = $sysctlvalues
+    }
+
+    create_resources('sysctl',$sysctlvalues_real)
   }
+
   if $grubkernelparams != undef {
-    create_resources('kernel_parameter',$grubkernelparams)
+    if !is_hash($grubkernelparams) {
+        fail("${myclass}::grubkernelparams must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $grubkernelparams_real = hiera_hash("${myclass}::grubkernelparams")
+    } else {
+      $grubkernelparams_real = $grubkernelparams
+    }
+
+    create_resources('kernel_parameter',$grubkernelparams_real)
   }
+
   if $sshd_config != undef {
-    create_resources('sshd_config',$sshd_config)
+    if !is_hash($sshd_config) {
+        fail("${myclass}::sshd_config must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $sshd_config_real = hiera_hash("${myclass}::sshd_config")
+    } else {
+      $sshd_config_real = $sshd_config
+    }
+
+    create_resources('sshd_config',$sshd_config_real)
   }
   if $sshd_subsystems != undef {
+    if !is_hash($sshd_subsystems) {
+        fail("${myclass}::sshd_subsystems must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $sshd_subsystems_real = hiera_hash("${myclass}::sshd_subsystems")
+    } else {
+      $sshd_subsystems_real = $sshd_subsystems
+    }
+
     create_resources('sshd_config_subsystem',$sshd_subsystems)
   }
 
