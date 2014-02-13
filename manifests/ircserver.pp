@@ -2,12 +2,15 @@ class profile::ircserver (
   $channels = undef,
   $opers = undef,
   $servers = undef,
+  $certdata = {},
   $hiera_merge = false,
 ) {
 
   $myclass = "${module_name}::ircserver"
 
   include ngircd
+
+  $ssl = str2bool(getvar('ngircd::ssl'))
 
   case type($hiera_merge) {
     'string': {
@@ -59,5 +62,38 @@ class profile::ircserver (
       $servers_real = $servers
     }
     create_resources('ngircd::server',$servers_real)
+  }
+
+  if $certdata != undef {
+    if !is_hash($certdata) {
+        fail("${myclass}::certdata must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $certdata_real = hiera_hash("${myclass}::certdata",{})
+    } else {
+      $certdata_real = $certdata
+    }
+  }
+
+  if $ssl {
+    include certtool
+
+    $certfile = getvar('ngircd::certfile')
+    $keyfile = getvar('ngircd::keyfile')
+    $certname = inline_template('<%= File.basename(@certfile,".*") %>')
+
+    certtool::cert { $certname:
+      certpath        => dirname($certfile),
+      keypath         => dirname($keyfile),
+      common_name     => $::fqdn,
+      self_signed     => true,
+      organization    => $certdata_real[organization],
+      unit            => $certdata_real[unit],
+      locality        => $certdata_real[locality],
+      state           => $certdata_real[state],
+      country         => $certdata_real[country],
+      expiration_days => $certdata_real[expidation_days]
+    }
   }
 }
