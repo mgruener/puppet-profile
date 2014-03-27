@@ -1,0 +1,11 @@
+default menu.c32
+prompt 1
+timeout 60
+
+display boot.msg
+
+label fedora
+  menu label Install ^Fedora
+  menu default
+  kernel vmlinuz
+  append initrd=initrd.img ks=http://<%= @bootserver -%>/kickstart/ks.cfg
