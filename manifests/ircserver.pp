@@ -93,7 +93,8 @@ class profile::ircserver (
       locality        => $certdata_real[locality],
       state           => $certdata_real[state],
       country         => $certdata_real[country],
-      expiration_days => $certdata_real[expidation_days]
+      expiration_days => $certdata_real[expidation_days],
+      dns_names       => $certdata_real[dns_names],
     }
   }
 }
