@@ -14,6 +14,7 @@ class profile::base (
   include network
   include usermanagement
   include puppet
+  include yumcron
 
   case type($hiera_merge) {
     'string': {
