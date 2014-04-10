@@ -5,6 +5,7 @@ class profile::base (
   $grubtimeout = 10,
   $sshd_config = undef,
   $sshd_subsystems = undef,
+  $selinux_mode = 'enforcing',
   $hiera_merge = false,
 ) {
 
@@ -116,6 +117,14 @@ class profile::base (
     ensure => absent,
     line   => 'alias rm="rm -i"',
     path   => '/root/.bashrc'
+  }
+
+  validate_re($selinux_mode, '^(enforcing|permissive|disabled)$', "${myclass}::selinux_mode may be either 'enforcing','permissive' or 'disabled' and is set to <${hiera_merge}>.")
+  augeas { 'selinux mode':
+    context => '/files/etc/selinux/config',
+    incl    => '/etc/selinux/config',
+    lens    => 'Shellvars.lns',
+    changes => "set SELINUX ${selinux_mode}"
   }
 
   case $::operatingsystem {
