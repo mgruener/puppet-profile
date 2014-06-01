@@ -1,4 +1,5 @@
 class profile::mysqlserver (
+    $databases = undef,
     $hiera_merge = false,
 ) {
 
@@ -26,5 +27,19 @@ class profile::mysqlserver (
     }
   } else {
     include mysql::server
+  }
+
+  if $databases {
+    if !is_hash($databases) {
+      fail("${myclass}::databases must be a hash.")
+    }
+
+    if $hiera_merge_real == true {
+      $databases_real = hiera_hash("${myclass}::databases",undef)
+    } else {
+      $databases_real = $databases
+    }
+
+    create_resources('mysql::db',$databases_real)
   }
 }
