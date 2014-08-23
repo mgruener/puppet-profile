@@ -13,7 +13,7 @@ class profile::multifactor_auth (
 
   create_resources('pam',$services,$defaults)
 
-  @@freeradius::radius_client { $::fqdn:
+  @@freeradius::client { $::fqdn:
     secret => 'radius'
   }
 }
