@@ -1,5 +1,6 @@
 class profile::multifactor_auth (
-  $services = {}
+  $radius_secret,
+  $services = {},
 ) {
 
   include pam_radius
@@ -14,7 +15,7 @@ class profile::multifactor_auth (
   create_resources('pam',$services,$defaults)
 
   @@freeradius::client { $::fqdn:
-    secret => 'radius',
+    secret => $radius_secret,
     tag    => 'radius_client',
   }
 }
