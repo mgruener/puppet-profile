@@ -17,8 +17,9 @@ class profile::multifactor_auth (
   create_resources('pam',$services,$defaults)
 
   @@freeradius::client { $::fqdn:
-    ensure => $ensure,
-    secret => $radius_secret,
-    tag    => 'radius_client',
+    ensure    => $ensure,
+    secret    => $radius_secret,
+    shortname => $::hostname,
+    tag       => 'radius_client',
   }
 }
