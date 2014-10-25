@@ -3,6 +3,7 @@ class profile::puppetmaster (
   $datadir      = '/etc/puppet/data',
 ) {
   include puppet::master
+  include r10k
 
   if $use_puppetdb == true {
     include puppetdb
