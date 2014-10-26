@@ -1,6 +1,7 @@
 class profile::puppetmaster (
-  $use_puppetdb = true,
-  $datadir      = '/etc/puppet/data',
+  $use_puppetdb    = true,
+  $datadir         = '/etc/puppet/data',
+  $environmentpath = '/etc/puppet/environments',
 ) {
   include puppet::master
   include r10k
@@ -8,6 +9,11 @@ class profile::puppetmaster (
   if $use_puppetdb == true {
     include puppetdb
     include puppetdb::master::config
+  }
+
+  puppet::config { 'environmentpath':
+    value   => $environmentpath,
+    section => 'main',
   }
 
   file { $datadir:
