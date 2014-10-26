@@ -1,6 +1,5 @@
 class profile::puppetmaster (
   $use_puppetdb    = true,
-  $datadir         = '/etc/puppet/data',
   $environmentpath = '/etc/puppet/environments',
 ) {
   include puppet::master
@@ -16,7 +15,7 @@ class profile::puppetmaster (
     section => 'main',
   }
 
-  file { $datadir:
+  file { $environmentpath:
     ensure  => directory,
     owner   => 'puppet',
     group   => 'puppet',
