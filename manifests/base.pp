@@ -7,6 +7,7 @@ class profile::base (
   $sshd_subsystems = undef,
   $selinux_mode = 'enforcing',
   $hiera_merge = false,
+  $services = {},
 ) {
 
   $myclass = "${module_name}::base"
@@ -99,6 +100,20 @@ class profile::base (
 
     create_resources('sshd_config_subsystem',$sshd_subsystems)
   }
+
+  if $hiera_merge_real == true {
+    $services_real = hiera_hash("${myclass}::services")
+  } else {
+    $services_real = $services
+  }
+
+  if $::operatingsystem == 'Fedora' {
+    $service_provider = 'systemd'
+  } else {
+    $service_provider = undef
+  }
+
+  create_resources('service',$services_real, { provider => $service_provider })
 
   # "brute-force" changes for which I have yet
   # to find a more flexible/scalable solution
