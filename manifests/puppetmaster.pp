@@ -4,6 +4,7 @@ class profile::puppetmaster (
 ) {
   include puppet::master
   include r10k
+  include r10k::config
 
   if $use_puppetdb == true {
     include puppetdb
