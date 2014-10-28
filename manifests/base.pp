@@ -17,6 +17,7 @@ class profile::base (
   include usermanagement
   include puppet
   include yumcron
+  include yumversionlock
   include duplicity
 
   case type($hiera_merge) {
