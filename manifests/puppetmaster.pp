@@ -20,6 +20,6 @@ class profile::puppetmaster (
     ensure  => directory,
     owner   => 'puppet',
     group   => 'puppet',
-    mode    => '6700',
+    mode    => '6770',
   }
 }
