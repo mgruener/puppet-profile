@@ -20,7 +20,6 @@ class profile::puppetmaster (
     ensure  => directory,
     owner   => 'puppet',
     group   => 'puppet',
-    recurse => true,
-    mode    => 'go-rwx'
+    mode    => '6700',
   }
 }
