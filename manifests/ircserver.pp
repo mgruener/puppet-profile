@@ -1,7 +1,7 @@
 class profile::ircserver (
-  $channels = undef,
-  $opers = undef,
-  $servers = undef,
+  $channels = {},
+  $opers = {},
+  $servers = {},
   $certdata = {},
   $hiera_merge = false,
 ) {
@@ -25,55 +25,48 @@ class profile::ircserver (
     }
   }
 
-  if $channels != undef {
-    if !is_hash($channels) {
-        fail("${myclass}::channels must be a hash.")
-    }
-
-    if $hiera_merge_real == true {
-      $channels_real = hiera_hash("${myclass}::channels",undef)
-    } else {
-      $channels_real = $channels
-    }
-    create_resources('ngircd::channel',$channels_real)
+  if !is_hash($channels) {
+      fail("${myclass}::channels must be a hash.")
   }
 
-  if $opers != undef {
-    if !is_hash($opers) {
-        fail("${myclass}::opers must be a hash.")
-    }
+  if $hiera_merge_real {
+    $channels_real = hiera_hash("${myclass}::channels",{})
+  } else {
+    $channels_real = $channels
+  }
+  create_resources('ngircd::channel',$channels_real)
+ 
 
-    if $hiera_merge_real == true {
-      $opers_real = hiera_hash("${myclass}::opers",undef)
-    } else {
-      $opers_real = $opers
-    }
-    create_resources('ngircd::oper',$opers_real)
+  if !is_hash($opers) {
+      fail("${myclass}::opers must be a hash.")
   }
 
-  if $servers != undef {
-    if !is_hash($servers) {
-        fail("${myclass}::servers must be a hash.")
-    }
+  if $hiera_merge_real {
+    $opers_real = hiera_hash("${myclass}::opers",{})
+  } else {
+    $opers_real = $opers
+  }
+  create_resources('ngircd::oper',$opers_real)
 
-    if $hiera_merge_real == true {
-      $servers_real = hiera_hash("${myclass}::servers",undef)
-    } else {
-      $servers_real = $servers
-    }
-    create_resources('ngircd::server',$servers_real)
+  if !is_hash($servers) {
+      fail("${myclass}::servers must be a hash.")
   }
 
-  if $certdata != undef {
-    if !is_hash($certdata) {
-        fail("${myclass}::certdata must be a hash.")
-    }
+  if $hiera_merge_real {
+    $servers_real = hiera_hash("${myclass}::servers",{})
+  } else {
+    $servers_real = $servers
+  }
+  create_resources('ngircd::server',$servers_real)
 
-    if $hiera_merge_real == true {
-      $certdata_real = hiera_hash("${myclass}::certdata",{})
-    } else {
-      $certdata_real = $certdata
-    }
+  if !is_hash($certdata) {
+      fail("${myclass}::certdata must be a hash.")
+  }
+
+  if $hiera_merge_real == true {
+    $certdata_real = hiera_hash("${myclass}::certdata",{})
+  } else {
+    $certdata_real = $certdata
   }
 
   if $ssl {
