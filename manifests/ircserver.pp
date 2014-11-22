@@ -10,7 +10,7 @@ class profile::ircserver (
 
   include ngircd
 
-  $ssl = str2bool(getvar('ngircd::ssl'))
+  $ssl = str2bool($::ngircd::ssl)
 
   case type($hiera_merge) {
     'string': {
@@ -79,8 +79,8 @@ class profile::ircserver (
   if $ssl {
     include certtool
 
-    $certfile = getvar('ngircd::certfile')
-    $keyfile = getvar('ngircd::keyfile')
+    $certfile = $::ngircd::certfile
+    $keyfile = $::ngircd::keyfile
     $certname = inline_template('<%= File.basename(@certfile,".*") %>')
 
     certtool::cert { $certname:
